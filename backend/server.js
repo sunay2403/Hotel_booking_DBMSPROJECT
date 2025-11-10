@@ -66,7 +66,7 @@ app.get('/api/rooms/available', async (req, res) => {
         let query = `
             SELECT room_number, category, price, capacity, status
             FROM Room
-            WHERE status = 'available'
+            WHERE UPPER(status) = 'AVAILABLE'
             AND capacity >= :minCapacity
         `;
         

@@ -4,10 +4,6 @@ import {
   Users,
   Search,
   CheckCircle,
-  MapPin,
-  Phone,
-  Mail,
-  CreditCard,
   ArrowRight,
   Sparkles,
   Star,
@@ -50,7 +46,18 @@ export default function HotelBookingSystem() {
         const data = await response.json();
 
         if (data.success) {
-          setRooms(data.rooms);
+          // 🧩 Group rooms by category and count how many available
+          const grouped = Object.values(
+            data.rooms.reduce((acc, room) => {
+              if (!acc[room.category]) {
+                acc[room.category] = { ...room, availableCount: 0 };
+              }
+              acc[room.category].availableCount += 1;
+              return acc;
+            }, {})
+          );
+
+          setRooms(grouped); // show only 1 per category
           setStep(2);
         } else {
           alert("Failed to fetch available rooms");
@@ -200,7 +207,9 @@ export default function HotelBookingSystem() {
           <div className="max-w-3xl mx-auto">
             <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
               <div className="bg-gradient-to-r from-blue-500 to-indigo-600 p-8 text-white">
-                <h2 className="text-3xl font-bold mb-2">Find Your Perfect Stay</h2>
+                <h2 className="text-3xl font-bold mb-2">
+                  Find Your Perfect Stay
+                </h2>
                 <p className="text-blue-100">
                   Search for available rooms and start your journey
                 </p>
@@ -289,14 +298,18 @@ export default function HotelBookingSystem() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {rooms.map((room) => (
                 <div
-                  key={room.roomNumber}
+                  key={room.category}
                   className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition p-6"
                 >
                   <h3 className="text-2xl font-bold text-gray-800 mb-2">
-                    {room.category}
+                    {room.category} Room
                   </h3>
-                  <p className="text-gray-500 mb-3">Room {room.roomNumber}</p>
-                  <p className="text-gray-600 mb-4">Capacity: {room.capacity}</p>
+                  <p className="text-gray-600 mb-3">
+                    Capacity: {room.capacity} guests
+                  </p>
+                  <p className="text-gray-500 mb-3">
+                    🏨 {room.availableCount} rooms available
+                  </p>
                   <p className="text-blue-600 font-bold text-xl mb-4">
                     ₹{room.price}/night
                   </p>
@@ -389,7 +402,7 @@ export default function HotelBookingSystem() {
       {/* ===== FOOTER ===== */}
       <footer className="bg-gray-900 text-white text-center py-6 mt-12">
         <p className="text-gray-400">
-          © 2024 Luxury Hotel. Experience the finest hospitality.
+          © 2025 Luxury Hotel. Experience the finest hospitality.
         </p>
       </footer>
     </div>
